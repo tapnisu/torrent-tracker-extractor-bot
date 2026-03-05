@@ -1,0 +1,13 @@
+[package]
+name = "torrent-tracker-extractor-bot"
+version = "0.1.0"
+edition = "2024"
+authors = ["Aleksei Rybin <aleksei@tapni.su>"]
+license = "MIT"
+
+[dependencies]
+log = "0.4"
+pretty_env_logger = "0.5"
+rbit = "0.2"
+teloxide = "0.17"
+tokio = { version = "1", features = ["full"] }
