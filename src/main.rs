@@ -20,7 +20,7 @@ async fn main() {
 
 async fn handle_message(bot: Bot, msg: Message) -> ResponseResult<()> {
     if let Some(text) = msg.text()
-        && text == "/start"
+        && text.starts_with("/start")
     {
         bot.send_message(msg.chat.id, "Send torrent file").await?;
         return Ok(());
@@ -50,10 +50,11 @@ async fn handle_message(bot: Bot, msg: Message) -> ResponseResult<()> {
 
     match Metainfo::from_bytes(&buffer) {
         Ok(metainfo) => {
-            let mut trackers = metainfo.trackers();
+            let trackers = metainfo.trackers();
 
             if trackers.is_empty() {
-                trackers.push("No trackers found".to_string());
+                bot.send_message(msg.chat.id, "No trackers found").await?;
+                return Ok(());
             }
 
             bot.send_message(msg.chat.id, trackers.join("\n")).await?;
