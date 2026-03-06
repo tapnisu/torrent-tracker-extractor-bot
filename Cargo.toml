@@ -1,5 +1,6 @@
 [package]
 name = "torrent-tracker-extractor-bot"
+description = "Telegram bot for extracting trackers from your torrent files"
 version = "0.1.0"
 edition = "2024"
 authors = ["Aleksei Rybin <aleksei@tapni.su>"]
