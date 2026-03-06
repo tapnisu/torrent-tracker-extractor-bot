@@ -1,6 +1,7 @@
 use rbit::Metainfo;
 use teloxide::net::Download;
 use teloxide::prelude::*;
+use teloxide::sugar::request::RequestReplyExt;
 
 #[tokio::main]
 async fn main() {
@@ -42,7 +43,10 @@ async fn handle_message(bot: Bot, msg: Message) -> ResponseResult<()> {
         return Ok(());
     }
 
-    bot.send_message(msg.chat.id, "Parsing...").await?;
+    let my_msg = bot
+        .send_message(msg.chat.id, "Parsing...")
+        .reply_to(msg.id)
+        .await?;
 
     let mut buffer = Vec::new();
     let file = bot.get_file(document.file.id.clone()).await?;
@@ -53,11 +57,15 @@ async fn handle_message(bot: Bot, msg: Message) -> ResponseResult<()> {
             let trackers = metainfo.trackers();
 
             if trackers.is_empty() {
-                bot.send_message(msg.chat.id, "No trackers found").await?;
+                bot.edit_message_text(msg.chat.id, my_msg.id, "No trackers found")
+                    .await?;
                 return Ok(());
             }
 
-            bot.send_message(msg.chat.id, trackers.join("\n")).await?;
+            let text = format!("```\n{}```", trackers.join("\n"));
+            bot.edit_message_text(msg.chat.id, my_msg.id, text)
+                .parse_mode(teloxide::types::ParseMode::MarkdownV2)
+                .await?;
         }
         Err(e) => {
             bot.send_message(msg.chat.id, format!("Failed to parse trackers: {}", e))
